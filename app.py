@@ -240,61 +240,6 @@ for i, img in enumerate(images):
     status_text.text(f"正在分析第 {i+1}/{len(images)} 张...")
 
 
-import streamlit as st
-from PIL import Image
-import datetime
-
-# 初始化 session_state
-if 'history' not in st.session_state:
-    st.session_state['history'] = []
-
-# 文件上传
-uploaded_files = st.file_uploader(
-    "上传巡检图片", 
-    type=["jpg", "jpeg", "png"], 
-    accept_multiple_files=True
-)
-
-images = []
-if uploaded_files:
-    for file in uploaded_files:
-        img = Image.open(file)
-        images.append(img)
-    
-    # 只有当 images 不为空时才执行循环
-    if images:
-        # 初始化进度条和状态文本
-        progress_bar = st.progress(0)
-        status_text = st.empty()
-        
-        # 遍历图片处理
-        for i, img in enumerate(images):
-            # 你的处理逻辑（比如调用模型分析）
-            # ----------------------
-            # 示例：模拟分析过程
-            import time
-            time.sleep(0.5)
-            # ----------------------
-            
-            # 更新进度
-            progress_bar.progress((i+1)/len(images))
-            status_text.text(f"正在分析第 {i+1}/{len(images)} 张图片...")
-        
-        # 所有图片分析完成
-        status_text.text("分析完成！")
-        
-        # 假设得到分析结果（示例）
-        question = "图片分析结果"
-        result = "图片中未发现异常"
-        
-        # 保存历史记录
-        st.session_state['history'].append({
-            "question": question,
-            "answer": result,
-            "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-        })
-else:
-    st.info("请上传图片后再继续")
 
 # 在 session_state 中存储历史
 if f'history_{username}' not in st.session_state:
