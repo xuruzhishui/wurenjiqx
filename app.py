@@ -217,6 +217,7 @@ if uploaded_files:
                     if final_report:
                         st.markdown("#### 综合巡检报告")
                         st.markdown(final_report)
+                        st.session_state.final_report = final_report
                         if st.button("👍 报告有帮助"):
                             save_feedback("批量", "批量报告", final_report, 1)
                             st.success("感谢反馈！")
@@ -224,6 +225,64 @@ if uploaded_files:
                     st.warning("请确保图片数量与报告类型匹配（单图报告需一张，批量报告需多张）")
 else:
     st.info("请上传图片开始使用")
+    # ------------------- 新增：专家反馈数据可视化与历史查询 -------------------
+st.divider()
+st.subheader("📊 专家反馈分析与历史记录")
+
+# 1. 反馈数据统计与可视化
+conn = sqlite3.connect('feedback.db')
+df = pd.read_sql("SELECT * FROM feedback", conn)
+conn.close()
+
+if not df.empty:
+    col1, col2 = st.columns(2)
+    with col1:
+        st.metric("总反馈数", len(df))
+        helpful = (df['rating'] == 1).sum()
+        not_helpful = (df['rating'] == -1).sum()
+        st.metric("有帮助反馈数", helpful)
+        st.metric("无帮助反馈数", not_helpful)
+    with col2:
+        st.bar_chart(df['rating'].value_counts(), color=["#2E8B57", "#DC143C"])
+
+    # 2. 历史反馈记录查询
+    st.subheader("📜 历史反馈记录")
+    st.dataframe(
+        df[['image_name', 'query', 'response', 'rating', 'comment', 'timestamp']],
+        use_container_width=True,
+        hide_index=True
+    )
+
+    # 3. 导出反馈数据为CSV
+    csv = df.to_csv(index=False).encode('utf-8')
+    st.download_button(
+        label="📥 导出反馈数据(CSV)",
+        data=csv,
+        file_name=f"feedback_{datetime.datetime.now().strftime('%Y%m%d')}.csv",
+        mime="text/csv"
+    )
+else:
+    st.info("暂无专家反馈数据")
+
+# ------------------- 新增：巡检报告导出为Markdown/PDF功能 -------------------
+if 'final_report' in st.session_state and st.session_state.final_report:
+    st.divider()
+    st.subheader("📤 报告导出")
+    md_content = f"# 无人机巡检报告\n{datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n\n{st.session_state.final_report}"
+    st.download_button(
+        label="📝 导出报告为Markdown",
+        data=md_content,
+        file_name=f"inspection_report_{datetime.datetime.now().strftime('%Y%m%d%H%M%S')}.md",
+        mime="text/markdown"
+    )
+
+# ------------------- 新增：会话状态管理（存储当前报告） -------------------
+if 'final_report' not in st.session_state:
+    st.session_state.final_report = ""
+
+# 在生成报告的代码后，添加存储逻辑：
+# 找到生成报告的代码块，在 st.markdown(final_report) 后添加：
+# st.session_state.final_report = final_report
 
 
 
