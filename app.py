@@ -229,21 +229,5 @@ else:
 
 
 
-# 在 session_state 中存储历史
-if f'history_{username}' not in st.session_state:
-    st.session_state[f'history_{username}'] = []
 
-# 添加问答后
-st.session_state[f'history_{username}'].append({
-    "question": question,
-    "answer": result,
-    "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-})
-
-# 在侧边栏显示历史
-with st.sidebar.expander("📜 历史记录"):
-    for item in st.session_state[f'history_{username}'][-10:]:  # 最近10条
-        st.markdown(f"**Q:** {item['question'][:30]}...")
-        st.markdown(f"**A:** {item['answer'][:50]}...")
-        st.caption(item['time'])
         
