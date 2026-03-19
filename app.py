@@ -225,19 +225,7 @@ if uploaded_files:
 else:
     st.info("请上传图片开始使用")
 
-# ------------------- 查看历史反馈（管理员） -------------------
-with st.expander("📊 专家反馈记录（仅管理员查看）"):
-    conn = sqlite3.connect('feedback.db')
-    df = pd.read_sql_query("SELECT * FROM feedback ORDER BY timestamp DESC", conn)
-    conn.close()
-    if not df.empty:
-        st.dataframe(df)
-    else:
-        st.write("暂无反馈记录。")
-        progress_bar = st.progress(0)
-status_text = st.empty()
-for i, img in enumerate(images):
-    status_text.text(f"正在分析第 {i+1}/{len(images)} 张...")
+
 
 
 
