@@ -234,3 +234,28 @@ with st.expander("📊 专家反馈记录（仅管理员查看）"):
         st.dataframe(df)
     else:
         st.write("暂无反馈记录。")
+        progress_bar = st.progress(0)
+status_text = st.empty()
+for i, img in enumerate(images):
+    status_text.text(f"正在分析第 {i+1}/{len(images)} 张...")
+    # 分析代码
+    progress_bar.progress((i+1)/len(images))
+status_text.text("分析完成！")
+# 在 session_state 中存储历史
+if f'history_{username}' not in st.session_state:
+    st.session_state[f'history_{username}'] = []
+
+# 添加问答后
+st.session_state[f'history_{username}'].append({
+    "question": question,
+    "answer": result,
+    "time": datetime.datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+})
+
+# 在侧边栏显示历史
+with st.sidebar.expander("📜 历史记录"):
+    for item in st.session_state[f'history_{username}'][-10:]:  # 最近10条
+        st.markdown(f"**Q:** {item['question'][:30]}...")
+        st.markdown(f"**A:** {item['answer'][:50]}...")
+        st.caption(item['time'])
+        
