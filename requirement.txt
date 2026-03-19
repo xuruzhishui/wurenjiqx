@@ -1,0 +1,6 @@
+﻿streamlit
+dashscope
+Pillow
+opencv-python
+requests
+pandas
